@@ -4,11 +4,14 @@ LABEL maintainer="Jaime Renee Wissner <j.wissner@obscuritylabs.com>"
 
 ENV CHROME_DRIVER_VERSION 88.0.4324.27
 ENV CHROME_VERSION 88.0.4324.96-1
+ENV GECKO_DRIVER_VERSION 0.29.0
+ENV FIREFOX_VERSION 78.6.1esr-1~deb10u1
 ENV BEHAVE_VERSION 1.2.6
 ENV ELEMENTIUM_VERSION 2.0.2
 ENV SELENIUM_VERSION 3.141.0
 
-ENV CHROME_DRIVER_TARBALL http://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
+ENV GECKO_DRIVER_TARBALL https://github.com/mozilla/geckodriver/releases/download/v${GECKO_DRIVER_VERSION}/geckodriver-v${GECKO_DRIVER_VERSION}-linux64.tar.gz
+ENV CHROME_DRIVER_TARBALL http://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
 
 RUN echo "===== Update and install basics"                      && \
       apt-get update && apt-get install -y --no-install-recommends \
@@ -32,12 +35,21 @@ RUN echo "===== Install prerequisite stuff..." && \
         xfonts-scalable                           \
         fonts-liberation                          \
         fonts-noto-cjk                            \
-        google-chrome-stable=${CHROME_VERSION}
+        google-chrome-stable=${CHROME_VERSION}    \
+        firefox-esr=${FIREFOX_VERSION}
 
 RUN echo "===== Install ChromeDriver"                                        && \
       wget -qO- $CHROME_DRIVER_TARBALL | zcat > /usr/local/bin/chromedriver  && \
       chown root:root /usr/local/bin/chromedriver                            && \
       chmod 0755 /usr/local/bin/chromedriver
+
+RUN echo "===== Install GeckoDriver"                                && \
+      wget $GECKO_DRIVER_TARBALL                                    && \
+      tar -xvzf geckodriver-v${GECKO_DRIVER_VERSION}-linux64.tar.gz && \
+      mv geckodriver /usr/local/bin/geckodriver                     && \
+      chown root:root /usr/local/bin/geckodriver                    && \
+      chmod 0755 /usr/local/bin/geckodriver                         && \
+      rm geckodriver-v${GECKO_DRIVER_VERSION}-linux64.tar.gz
 
 RUN echo "===== Pip Install"           && \
       pip3 install --no-cache-dir         \
