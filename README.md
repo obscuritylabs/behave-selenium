@@ -74,14 +74,14 @@ You can have this container run tests on your local browser, which is useful for
 On Mac, install chromedriver with brew:
 
 ```bash
-brew install chromedriver
+$ brew install chromedriver
 ```
 
 In order to allow the connection between the container and the local chromedriver, you need to whitelist the IP that is making the connection, and that needs to be specified before the container exists. Otherwise you'll get the error `WebDriverException: Message: Host header or origin header is specified and is not localhost.` In most cases, this will be `172.17.0.2`, specifically if this is the only container running:
 
 ```bash
-chromedriver --url-base=/wd/hub --whitelisted-ips="172.17.0.2"
-docker run --rm -it -v -e BEHAVE_RUN_LOCAL=true $(pwd):/behave obscuritylabs/behave-selenium
+$ chromedriver --url-base=/wd/hub --whitelisted-ips="172.17.0.2"
+$ docker run --rm -it -e BEHAVE_RUN_LOCAL=true -v $(pwd):/behave obscuritylabs/behave-selenium
 ```
 
 If you have issues with this, have other containers running, or would like to ensure that the IP address is predictable for any other reason, you can run the following docker compose file instead, and whitelist `172.23.0.2` (or whatever you want to change it to, 23 is just my favorite number).
